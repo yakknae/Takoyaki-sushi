@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ver cuentas</title>
+    <link rel="stylesheet" href="/static/cuentas.css" />
+  </head>
+  <body>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="crear_cuenta">Crear cuenta</a></li>
+        </ul>
+        <h1>Cuentas abiertas</h1>
+      </nav>
+    </div>
+
+    {% if message %}
+    <div class="message-container">
+      <p class="message">{{ message }}</p>
+    </div>
+    {% endif %} {% if error_message %}
+    <div class="message-container">
+      <p class="message">{{ error_message }}</p>
+    </div>
+    {% endif %}
+
+    <div class="cuentas-container">
+      {% for cuenta in cuentas %}
+      <div class="cuenta">
+        <h2>Código de Cuenta: {{ cuenta.id }}</h2>
+        <p>Mesa: {{ cuenta.mesa_id }}</p>
+        <p>Estado: {{ cuenta.estado }}</p>
+        <p>Total Gastado: {{ cuenta.total }}</p>
+
+        <!-- Botón para desplegar formulario de agregar productos -->
+        <button onclick="mostrarFormulario('{{ cuenta.id }}')">Agregar producto</button>
+
+        <!-- Agregar productos a la cuenta -->
+        <div id="formAgregarProducto_{{ cuenta.id }}" style="display: none">
+          <form id="agregarProductoForm_{{ cuenta.id }}">
+            <label>Combos Disponibles:</label>
+            <div>
+              {% for combo in combos %}
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  id="combo_{{ combo.id }}"
+                  name="productos[]"
+                  value="combo_{{ combo.id }}"
+                  class="form-check-input"
+                />
+                <label for="combo_{{ combo.id }}" class="form-check-label">
+                  {{ combo.nombre }} - ${{ combo.precio }}
+                </label>
+              </div>
+              {% endfor %}
+            </div>
+
+            <label>Bebidas disponibles:</label>
+            <div>
+              {% for bebida in bebidas %}
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  id="bebida_{{ bebida.id }}"
+                  name="productos[]"
+                  value="bebida_{{ bebida.id }}"
+                  class="form-check-input"
+                />
+                <label for="bebida_{{ bebida.id }}" class="form-check-label">
+                  {{ bebida.nombre }} - ${{ bebida.precio }}
+                </label>
+              </div>
+              {% endfor %}
+            </div>
+
+            <label for="cantidad_{{ cuenta.id }}">Cantidad:</label>
+            <input type="number" name="cantidad" id="cantidad_{{ cuenta.id }}" min="1" required />
+
+            <button type="button" onclick="agregarProducto('{{ cuenta.id }}')">Agregar productos</button>
+          </form>
+        </div>
+
+        <!-- Botón para cerrar cuenta -->
+        <button onclick="cerrarCuenta('{{ cuenta.id }}')">Cerrar cuenta</button>
+      </div>
+      {% endfor %}
+    </div>
+
+    <script>
+      // Función para mostrar el formulario de agregar productos
+      function mostrarFormulario(cuentaId) {
+        const formulario = document.getElementById(`formAgregarProducto_${cuentaId}`);
+        formulario.style.display = formulario.style.display === "none" ? "block" : "none";
+      }
+
+      // Función para agregar productos a la cuenta de manera asincrónica
+      function agregarProducto(cuentaId) {
+        const form = document.getElementById(`agregarProductoForm_${cuentaId}`);
+        const formData = new FormData(form);
+
+        // Actualiza los elementos productos[] en lugar de productos
+        const productos = formData.getAll("productos"); // Obtiene todos los productos seleccionados
+        formData.delete("productos"); // Elimina el campo existente
+
+        productos.forEach((producto) => {
+          formData.append("productos[]", producto); // Agrega como productos[]
+        });
+
+        console.log("Datos enviados:", Array.from(formData.entries()));
+
+        fetch(`/agregar_producto/${cuentaId}`, {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.text();
+            } else {
+              return response.text().then((text) => {
+                throw new Error(text);
+              });
+            }
+          })
+          .then((data) => {
+            console.log("Respuesta del servidor:", data);
+            location.reload();
+          })
+          .catch((error) => {
+            console.error("Error al agregar productos:", error);
+          });
+      }
+      // Función para cerrar cuenta
+      function cerrarCuenta(cuentaId) {
+        if (confirm("¿Estás seguro de que deseas cerrar esta cuenta?")) {
+          fetch(`/cerrar_cuenta/${cuentaId}`, {
+            method: "POST",
+          })
+            .then((response) => {
+              if (response.ok) {
+                window.location.href = "/read_cuentas?message=Cuenta cerrada exitosamente";
+              } else {
+                console.error("Error al cerrar la cuenta");
+              }
+            })
+            .catch((error) => console.error("Error:", error));
+        }
+      }
+    </script>
+  </body>
+</html>

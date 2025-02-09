@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Takoyaki sushi</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  </head>
+  <body>
+    <header>
+      <h1>Bienvenido a la Gestión de Takoyaki</h1>
+    </header>
+    <main>
+      <div class="container">
+        <!-- Sección Clientes -->
+        <div class="card">
+          <h2>Clientes</h2>
+          <p>Gestiona los datos de los clientes.</p>
+          <div class="button-group">
+            <a href="/crear_cliente" class="button">Crear cliente</a>
+            <a href="/read_clientes" class="button">Ver clientes</a>
+          </div>
+        </div>
+
+        <!-- Sección Mesas -->
+        <div class="card">
+          <h2>Mesas</h2>
+          <p>Gestiona las mesas del restaurante.</p>
+          <div class="button-group">
+            <a href="/crear_mesa" class="button">Crear mesa</a>
+            <a href="/read_mesas" class="button">Ver mesas</a>
+          </div>
+        </div>
+
+        <!-- Sección Combos -->
+        <div class="card">
+          <h2>Combos</h2>
+          <p>Gestiona los combos del restaurante.</p>
+          <div class="button-group">
+            <a href="/crear_combo" class="button">Crear combo</a>
+            <a href="/read_combos" class="button">Ver combos</a>
+          </div>
+        </div>
+
+        <!-- Sección Bebodas -->
+        <div class="card">
+          <h2>Bebidas</h2>
+          <p>Gestiona las bebidas.</p>
+          <div class="button-group">
+            <a href="/crear_bebida" class="button">Crear bebida</a>
+            <a href="/read_bebidas" class="button">Ver bebidas</a>
+          </div>
+        </div>
+
+        <!-- Sección reservas -->
+        <div class="card">
+          <h2>Reservas</h2>
+          <p>
+            Gestiona las reservas del restaurante.<br />
+            - actualizar reservas en mantenimiento -
+          </p>
+          <div class="button-group">
+            <a href="/crear_reserva" class="button">Crear reserva</a>
+            <a href="/read_reserva" class="button">Ver reservas</a>
+          </div>
+        </div>
+        <!-- Sección Pedidos -->
+        <div class="card">
+          <h2>Pedidos</h2>
+          <p>Gestiona los pedidos de los clientes.</p>
+          <div class="button-group">
+            <a href="/crear_pedido" class="button">Crear pedido</a>
+            <a href="/read_pedidos" class="button">Ver pedidos</a>
+            <a href="/select_mesa" class="button">Ver pedidos de una mesa</a>
+            <a href="/select_cliente" class="button">Ver pedidos de un cliente</a>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <p>&copy; Takoyaki sushi</p>
+    </footer>
+  </body>
+</html>

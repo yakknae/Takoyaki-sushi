@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Crear mesa</title>
+    <link rel="stylesheet" href="/static/crear_cliente.css" />
+  </head>
+  <body>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/read_mesas">Ver mesas</a></li>
+        </ul>
+        <h1>Crear nueva mesa</h1>
+      </nav>
+    </div>
+
+    <div class="form-container">
+      <form action="/crear_mesa" method="post">
+        <div class="form-group">
+          <label for="numero_mesa">Número de mesa:</label>
+          <input type="number" id="numero_mesa" name="numero_mesa" required />
+        </div>
+        <div class="form-group">
+          <label for="capacidad">Capacidad:</label>
+          <input
+            type="number"
+            id="capacidad"
+            name="capacidad"
+            required
+            placeholder="Ingresar la capacidad de la mesa"
+          />
+        </div>
+        <div class="form-group">
+          <label for="disponible">Disponible:</label>
+          <select id="disponible" name="disponible" required>
+            <option value="">Seleccione...</option>
+            <option value="1">Sí</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+        <!--
+        <div class="form-group">
+          <label for="id_cliente">Cliente:</label>
+          <select name="id_cliente" required>
+            <option value="">Seleccione un cliente</option>
+            {% for cliente in clientes %}
+            <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+         -->
+        <button type="submit">Crear mesa</button>
+      </form>
+    </div>
+
+    <!-- Mensaje de éxito (si existe) -->
+    {% if success_message %}
+    <div class="message-container">
+      <p class="message success">{{ success_message }}</p>
+    </div>
+    {% elif error_message %}
+    <div class="message-container">
+      <p class="message error">{{ error_message }}</p>
+    </div>
+    {% endif %}
+  </body>
+</html>

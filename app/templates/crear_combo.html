@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crear combo</title>
+    <link rel="stylesheet" href="/static/crear_cliente.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+27z8bUG1zY2nFGEU1M+oJp4lg5A+"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/read_combos">Ver combos</a></li>
+        </ul>
+        <h1>Crear nuevo combo</h1>
+      </nav>
+    </div>
+
+    <div class="form-container">
+      <form action="/crear_combo" method="post">
+        <div class="form-group">
+          <label for="nombre">Nombre del combo:</label>
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            class="form-control"
+            required
+            placeholder="Ingresar el nombre del combo"
+          />
+        </div>
+        <div class="form-group">
+          <label for="descripcion">Descripción:</label>
+          <textarea
+            id="descripcion"
+            name="descripcion"
+            class="form-control"
+            required
+            placeholder="Ingresar detalles del combo"
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label for="precio">Precio:</label>
+          <input
+            type="number"
+            id="precio"
+            name="precio"
+            step="0.01"
+            class="form-control"
+            required
+            placeholder="Ingresar el precio del combo"
+          />
+        </div>
+
+        <!-- Ingredientes con checkboxes -->
+        <div class="form-group">
+          <label>Productos incluidos:</label>
+          <div class="form-check">
+            <input type="checkbox" id="papas" name="ingredientes" value="papas" class="form-check-input" />
+            <label for="papas" class="form-check-label">Papas Fritas</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="hamburguesa" name="ingredientes" value="hamburguesa" class="form-check-input" />
+            <label for="hamburguesa" class="form-check-label">Hamburguesa</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="bebida" name="ingredientes" value="bebida" class="form-check-input" />
+            <label for="bebida" class="form-check-label">Bebida</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="ensalada" name="ingredientes" value="ensalada" class="form-check-input" />
+            <label for="ensalada" class="form-check-label">Ensalada</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary mt-3">Crear combo</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Mensaje de éxito (si existe) -->
+    {% if success_message %}
+    <div class="message-container">
+      <p class="message success">{{ success_message }}</p>
+    </div>
+    {% elif error_message %}
+    <div class="message-container">
+      <p class="message error">{{ error_message }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Script de Bootstrap -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+27z8bUG1zY2nFGEU1M+oJp4lg5A+"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

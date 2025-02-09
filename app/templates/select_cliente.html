@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pedidos por Mesa</title>
+    <link rel="stylesheet" href="/static/crear_cliente.css" />
+  </head>
+  <body>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/read_clientes">Ver clientes</a></li>
+        </ul>
+        <h1>Consultar pedidos de un cliente</h1>
+      </nav>
+    </div>
+
+    <div class="form-container">
+      <form id="mesaForm">
+        <div class="form-group">
+          <label for="cliente_id">Selecciona un cliente:</label>
+          <select name="cliente_id" id="cliente_id" required>
+            <option value="">Seleccione un cliente</option>
+            {% for cliente in clientes %}
+            <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="button" class="button" onclick="redirectToMesa()">Ver pedidos</button>
+      </form>
+    </div>
+
+    <script>
+      function redirectToMesa() {
+        const clienteId = document.getElementById("cliente_id").value;
+        if (clienteId) {
+          window.location.href = `/cliente/${clienteId}/pedidos`;
+        } else {
+          alert("Por favor selecciona un cliente.");
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lista de mesas</title>
+    <link rel="stylesheet" href="/static/planilla.css" />
+  </head>
+  <body>
+    <div>
+      <nav>
+        <ul>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/crear_mesa">Crear mesa</a></li>
+        </ul>
+        <h1>Lista de mesas</h1>
+      </nav>
+    </div>
+
+    <!-- Mensaje de éxito (si existe) -->
+    {% if message %}
+    <div id="messageContainer" class="message-container" style="display: none"></div>
+    {% endif %}
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Número de Mesa</th>
+          <th>Capacidad</th>
+          <th>Disponible</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for mesa in mesas %}
+        <tr id="mesa-{{ mesa.id }}">
+          <td>{{ mesa.id }}</td>
+          <td>{{ mesa.numero_mesa }}</td>
+          <td id="mesa-{{ mesa.id }}-capacidad">{{ mesa.capacidad }}</td>
+          <td id="mesa-{{ mesa.id }}-disponible">{{ "Sí" if mesa.disponible else "No" }}</td>
+          <td>
+            <button onclick="showUpdateForm('{{ mesa.id }}')">Actualizar</button>
+            <button onclick="showDeleteForm('{{ mesa.id }}')">Eliminar</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Formulario de actualización -->
+    <div id="updateForm" style="display: none">
+      <h2>Actualizar mesa</h2>
+      <form id="formActualizar" method="post" onsubmit="enviarActualizarMesa(event)">
+        <input type="hidden" id="updateId" name="id" />
+        <div class="acomodar-input">
+          <label for="updateCapacidad">Capacidad:</label>
+          <input type="number" id="updateCapacidad" name="capacidad" required />
+        </div>
+        <div class="acomodar-input">
+          <label for="updateDisponible">Disponible:</label>
+          <select id="updateDisponible" name="disponible" required>
+            <option value="true">Sí</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+        <div class="botones-act-dele">
+          <button type="submit">Actualizar</button>
+          <button class="pis" type="button" onclick="hideUpdateForm()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Formulario de eliminación -->
+    <div id="deleteForm" style="display: none">
+      <h2>Eliminar mesa</h2>
+      <form id="deleteMesaForm" method="post">
+        <input type="hidden" id="deleteId" name="id" />
+        <p class="parrafo">¿Estás seguro de que deseas eliminar esta mesa?</p>
+        <div class="botones-act-dele1">
+          <button type="button" onclick="eliminarMesa()">Eliminar</button>
+          <button class="pis" type="button" onclick="hideDeleteForm()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      function showUpdateForm(id) {
+        // Limpiar el formulario antes de llenarlo
+        document.getElementById("updateId").value = "";
+        document.getElementById("updateCapacidad").value = "";
+        document.getElementById("updateDisponible").value = "true"; // Establece el valor por defecto
+
+        // Obtener la mesa usando el ID
+        fetch(`/mesas/${id}`)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Error al obtener la mesa: " + response.statusText);
+            }
+            return response.json(); // Cambia a .json() para recibir respuesta en JSON
+          })
+          .then((mesa) => {
+            // Llenar el formulario con los datos de la mesa
+            document.getElementById("updateId").value = mesa.id;
+            document.getElementById("updateCapacidad").value = mesa.capacidad;
+            document.getElementById("updateDisponible").value = mesa.disponible ? "true" : "false";
+
+            // Mostrar el formulario de actualización
+            document.getElementById("updateForm").style.display = "block";
+          })
+          .catch((error) => console.error("Error al obtener la mesa:", error));
+      }
+
+      function enviarActualizarMesa(event) {
+        event.preventDefault(); // Evitar el envío normal del formulario
+
+        const form = document.getElementById("formActualizar");
+        const formData = new FormData(form); // Recoger todos los campos del formulario
+        const mesaId = document.getElementById("updateId").value;
+
+        fetch(`/mesas/${mesaId}/actualizar`, {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Error al actualizar la mesa. Código de estado: " + response.status);
+            }
+            return response.json(); // Espera un JSON en respuesta
+          })
+          .then((data) => {
+            console.log("Respuesta del servidor:", data);
+            if (data.mesa) {
+              // Si 'mesa' existe en el JSON de respuesta
+              // Actualiza la tabla con los nuevos valores
+              document.getElementById(`mesa-${data.mesa.id}-capacidad`).textContent = data.mesa.capacidad;
+              document.getElementById(`mesa-${data.mesa.id}-disponible`).textContent = data.mesa.disponible
+                ? "Sí"
+                : "No";
+              // Muestra un mensaje de éxito
+              alert("Mesa actualizada exitosamente");
+            } else {
+              console.error("Formato de respuesta inesperado:", data);
+            }
+            hideUpdateForm(); // Oculta el formulario después de la actualización
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Error al actualizar la mesa: " + error.message); // Muestra un mensaje de error
+          });
+      }
+
+      function showDeleteForm(id) {
+        document.getElementById("deleteId").value = id;
+        document.getElementById("deleteForm").style.display = "block";
+        document.getElementById("updateForm").style.display = "none"; // Asegurarse de que el formulario de actualización esté oculto
+      }
+
+      function hideUpdateForm() {
+        document.getElementById("updateForm").style.display = "none";
+      }
+
+      function hideDeleteForm() {
+        document.getElementById("deleteForm").style.display = "none";
+      }
+
+      function eliminarMesa() {
+        const mesaId = document.getElementById("deleteId").value;
+
+        fetch(`/mesas/${mesaId}/eliminar`, {
+          method: "DELETE", // Cambia a DELETE
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Error en la eliminación");
+            }
+            return response.text(); // Cambia a .text() si esperas una respuesta de texto
+          })
+          .then((data) => {
+            // Recargar la página actual
+            location.reload(); // Esto recargará la página actual
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+    </script>
+  </body>
+</html>

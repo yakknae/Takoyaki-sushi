@@ -1,0 +1,14 @@
+- hay 2 formas de entrar a la base de datos
+mysql:
+MYSQL_USER = "root"
+MYSQL_PASSWORD = "1234"
+MYSQL_HOST = "127.0.0.1"  # o la IP de tu servidor MySQL
+MYSQL_PORT = "3307" 
+MYSQL_DATABASE = "bodegon9"
+
+mariadb:
+MYSQL_USER = "root"
+MYSQL_PASSWORD = "123"
+MYSQL_HOST = "127.0.0.1"  # o la IP de tu servidor MySQL
+MYSQL_PORT = "3306" 
+MYSQL_DATABASE = "bodegon9"
