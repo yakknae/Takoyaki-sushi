@@ -211,7 +211,8 @@ p {
   margin-left: 28px;
 }
 
-#descripcion {
+#descripcion,
+#updateDescripcion {
   background: #2a2a2a; /* Color de fondo */
   color: white; /* Color del texto */
   border: 1px solid #444; /* Opcional: color del borde */
@@ -312,4 +313,15 @@ nav h1 {
 }
 .summary-container button:active {
   background-color: #85060d;
+}
+
+#updateDisponible,
+#updateCliente,
+#updateMesa {
+  background: #2a2a2a;
+  color: white;
+  border: 1px solid #444;
+  height: 25px;
+  border-radius: 20px;
+  margin-bottom: 25px;
 }

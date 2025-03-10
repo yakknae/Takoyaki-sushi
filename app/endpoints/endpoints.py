@@ -619,12 +619,20 @@ async def create_reserva(
 # Leer todas las reservas
 @router.get("/read_reserva", response_class=HTMLResponse, tags=["Reservas"])
 async def get_reservas(request: Request, db: Session = Depends(get_db), message: str = None):
+    """Renderiza el template de reservas con los datos necesarios."""
     reservas = crud.get_reservas(db)
-    return templates.TemplateResponse("read_reserva.html", {
-        "request": request, 
-        "reservas": reservas,
-        "message": message  # Pasar mensaje si existe
-    })
+    clientes, mesas = crud.get_clientes_y_mesas(db)
+    
+    return templates.TemplateResponse(
+        "read_reserva.html",
+        {
+            "request": request,
+            "reservas": reservas,
+            "clientes": clientes,
+            "mesas": mesas,
+            "message": message
+        }
+    )
 
 #//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
@@ -638,22 +646,52 @@ def get_reserva(reserva_id: int, db: Session = Depends(get_db)):
 
 #//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
+@router.get("/reservas/{reserva_id}/editar", response_class=HTMLResponse, tags=["Reservas"])
+async def editar_reserva(
+    reserva_id: int, 
+    request: Request, 
+    db: Session = Depends(get_db)
+):
+    # Obtener la reserva específica
+    reserva = crud.get_reserva(db, reserva_id)
+    if reserva is None:
+        raise HTTPException(status_code=404, detail="Reserva no encontrada")
+
+    # Consultar clientes y mesas
+    clientes = crud.get_clientes(db)
+    mesas = crud.get_all_mesas(db)
+
+    # Renderizar el template con los datos obtenidos
+    return templates.TemplateResponse(
+        "read_reserva.html",
+        {
+            "request": request,
+            "reserva": reserva,
+            "clientes": clientes,
+            "mesas": mesas
+        }
+    )
+#//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+
 # Actualizar una reserva
 @router.post("/reservas/{reserva_id}/actualizar", tags=["Reservas"])
-async def actualizar_reserva(
+async def actualizar_reserva_endpoint(
     reserva_id: int,
-    fecha_reserva: str = Form(...),  # Recibe solo la fecha
-    hora_reserva: str = Form(...),   # Recibe solo la hora
+    fecha_reserva: str = Form(...),
+    hora_reserva: str = Form(...),
+    cliente_id: int = Form(...),
+    mesa_id: int = Form(...),
     db: Session = Depends(get_db)
 ):
     try:
-        # Solo se actualizan los campos de fecha y hora
-        reserva_actualizada = crud.update_reserva(
+        reserva_actualizada = crud.actualizar_reserva(
             db,
             reserva_id,
             schemas.ReservaUpdate(
-                fecha=fecha_reserva,  # Actualiza solo la fecha
-                hora=hora_reserva     # Actualiza solo la hora
+                fecha=fecha_reserva,
+                hora=hora_reserva,
+                cliente_id=cliente_id,
+                mesa_id=mesa_id
             )
         )
         if reserva_actualizada is None:
@@ -762,20 +800,27 @@ def obtener_cuenta(cuenta_id: int, db: Session = Depends(get_db)):
 # Actualizar una cuenta
 @router.post("/cuentas/{cuenta_id}/actualizar", tags=["Cuentas"])
 async def actualizar_cuenta(
-    cuenta_id: int, 
-    id_reserva: int = Form(...), 
+    cuenta_id: int,
+    fecha_reserva: str = Form(...),
+    hora_reserva: str = Form(...),
+    cliente_id: int = Form(...),
+    mesa_id: int = Form(...),
     db: Session = Depends(get_db)
 ):
     try:
-        cuenta_actualizada = crud.update_cuenta(
-            db, 
-            cuenta_id, 
-            schemas.CuentaCreate(
-                id_reserva=id_reserva
-            )
+        # Crear un esquema con los nuevos datos para la actualización
+        datos_actualizados = schemas.CuentaCreate(
+            fecha=fecha_reserva,
+            hora=hora_reserva,
+            id_cliente=cliente_id,
+            mesa_id=mesa_id
         )
+        
+        cuenta_actualizada = crud.update_cuenta(db, cuenta_id, datos_actualizados)
+
         if cuenta_actualizada is None:
             raise HTTPException(status_code=404, detail="Cuenta no encontrada")
+
         return {"mensaje": "Cuenta actualizada exitosamente"}
     except Exception as e:
         print(f"Error actualizando cuenta: {e}")

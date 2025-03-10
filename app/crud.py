@@ -280,16 +280,31 @@ def get_reserva(db: Session, reserva_id: int):
 #//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
 # Actualizar una reserva
-def update_reserva(db: Session, reserva_id: int, reserva_data: schemas.ReservaUpdate):
-    db_reserva = db.query(models.Reserva).filter(models.Reserva.id == reserva_id).first()
+def get_reserva_por_id(db: Session, reserva_id: int):
+    return db.query(models.Reserva).filter(models.Reserva.id == reserva_id).first()
+
+#//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+
+def get_clientes_y_mesas(db: Session):
+    clientes = db.query(models.Cliente).all()
+    mesas = db.query(models.Mesa).all()
+    return clientes, mesas
+
+#//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+
+def actualizar_reserva(db: Session, reserva_id: int, reserva_data: schemas.ReservaUpdate):
+    db_reserva = get_reserva_por_id(db, reserva_id)
     if db_reserva:
-        # Solo actualizar fecha y hora
-        db_reserva.fecha = reserva_data.fecha
-        db_reserva.hora = reserva_data.hora
+        # Actualizar todos los campos de la reserva
+        db_reserva.fecha_reserva = reserva_data.fecha_reserva
+        db_reserva.hora_reserva = reserva_data.hora_reserva
+        db_reserva.cliente_id = reserva_data.cliente_id
+        db_reserva.mesa_id = reserva_data.mesa_id
         db.commit()
         db.refresh(db_reserva)
         return db_reserva
     return None
+#//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
 #//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
