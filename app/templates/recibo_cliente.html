@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Recibo Consolidado - Cliente {{ cliente_id }}</title>
+    <!--S T Y L E-->
+    <link rel="stylesheet" href="/static/recibo.css" />
+    <style>
+      /* Estilo general para la tabla */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, sans-serif;
+        margin: 20px 0;
+      }
+
+      /* Encabezados de la tabla */
+      th {
+        color: #ffffff;
+        text-align: center;
+        padding: 10px;
+      }
+
+      /* Filas de la tabla */
+      td {
+        padding: 10px;
+        text-align: center;
+        border: 2px solid transparent; /* Borde transparente por defecto */
+      }
+
+      /* Resaltar columnas con colores diferentes */
+      td:nth-child(1) {
+        border-left: 4px solid #ff6f61; /* Color para la primera columna */
+      }
+      td:nth-child(2) {
+        border-left: 4px solid #6bc3ff; /* Color para la segunda columna */
+      }
+      td:nth-child(3) {
+        border-left: 4px solid #93ff6b; /* Color para la tercera columna */
+      }
+      td:nth-child(4) {
+        border-left: 4px solid #ffcc6b; /* Color para la cuarta columna */
+      }
+      td:nth-child(5) {
+        border-left: 4px solid #b16bff; /* Color para la quinta columna */
+      }
+      td:nth-child(6) {
+        border-left: 4px solid #6bd2ff; /* Color para la sexta columna */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="recibo-container-cliente">
+      <div class="ascii-title">T A K O Y A K I</div>
+      <h1>Recibo Consolidado</h1>
+
+      <!-- Información del cliente -->
+      <div class="cliente-info">
+        <p><strong>Cliente:</strong> {{ cliente_nombre }}</p>
+        <p><strong>Mesa:</strong> {{ mesa_id }}</p>
+        <p><strong>Fecha y Hora:</strong> {{ fecha_hora }}</p>
+      </div>
+
+      <!-- Detalles de los pedidos -->
+      <h2>Detalles de los Pedidos</h2>
+      <table class="detalles-pedidos">
+        <thead>
+          <tr>
+            <th>Combo</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for combo in combos_consumidos %}
+          <tr>
+            <td>{{ combo.nombre }}</td>
+            <td>{{ combo.cantidad }}</td>
+            <td>${{ combo.precio_unitario }}</td>
+            <td>${{ combo.subtotal }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <table class="detalles-pedidos">
+        <thead>
+          <tr>
+            <th>Bebida</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for bebida in bebidas_consumidas %}
+          <tr>
+            <td>{{ bebida.nombre }}</td>
+            <td>{{ bebida.cantidad }}</td>
+            <td>${{ bebida.precio_unitario }}</td>
+            <td>${{ bebida.subtotal }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- Resumen final -->
+      <div class="resumen-final">
+        <h2>Resumen Final</h2>
+        <p><strong>Total Combos:</strong> {{ total_combos }}</p>
+        <p><strong>Total Bebidas:</strong> {{ total_bebidas }}</p>
+        <p><strong>Total a Pagar:</strong> ${{ total_cuenta }}</p>
+      </div>
+
+      <!-- Botón para imprimir -->
+      <button onclick="window.print()" class="print-button">Imprimir Recibo</button>
+    </div>
+  </body>
+</html>

@@ -3,6 +3,13 @@
 * {
   cursor: url(/static/assets/cursorWhite.png) 16 16, auto !important;
 }
+input,
+textarea,
+select,
+button {
+  cursor: url(/static/assets/cursorWhite.png) 16 16, auto !important;
+}
+
 body {
   font-family: "Poppins", sans-serif;
   background-color: #f8f8f8;
@@ -13,6 +20,11 @@ body {
   background-position: center;
   height: 100vh;
   color: white;
+  overflow: hidden;
+}
+
+body.combo-page {
+  overflow: hidden;
 }
 
 h1 {
@@ -25,6 +37,7 @@ h1 {
   justify-content: center;
   align-items: center;
   min-height: 80vh;
+  margin: 20px;
 }
 
 form {
@@ -36,7 +49,7 @@ form {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  width: 360px;
+  width: 500px;
 }
 
 .form-group {
@@ -178,4 +191,16 @@ h1 {
   border: 1px solid #444;
   height: 25px;
   border-radius: 20px;
+}
+
+.form-group2 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Divide el contenedor en 3 columnas iguales */
+  gap: 16px; /* Espacio entre los elementos */
+}
+
+@media (max-width: 1068px) {
+  .form-group2 {
+    grid-template-columns: 1fr;
+  }
 }

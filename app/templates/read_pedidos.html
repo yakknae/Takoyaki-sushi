@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Lista de pedidos</title>
+    <!--S T Y L E-->
     <link rel="stylesheet" href="/static/planilla.css" />
   </head>
   <body>
@@ -75,8 +76,8 @@
             {% endif %}
           </td>
           <td>
-            <form action="/generar_recibo/{{ pedido.id }}" method="get" target="_blank">
-              <button type="submit">Generar recibo</button>
+            <form action="/generar_comanda/{{ pedido.id }}" method="get" target="_blank">
+              <button type="submit">Generar comanda</button>
             </form>
           </td>
         </tr>

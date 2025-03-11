@@ -6,7 +6,7 @@ from app import crud, schemas
 from fastapi.templating import Jinja2Templates
 import logging
 from app.models import Pedido
-
+from datetime import datetime
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -333,7 +333,7 @@ async def delete_pedido(pedido_id: int, db: Session = Depends(get_db)):
 
 #//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
-@router.get("/generar_recibo/{pedido_id}", response_class=HTMLResponse, tags=["Recibos"])
+@router.get("/generar_comanda/{pedido_id}", response_class=HTMLResponse, tags=["Recibos"])
 async def generar_recibo(
     request: Request,
     pedido_id: int,
@@ -369,20 +369,130 @@ async def generar_recibo(
     })
 
 #//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+@router.get("/generar_recibo_cliente/{cliente_id}", response_class=HTMLResponse, tags=["Recibos"])
+async def generar_recibo_cliente(
+    request: Request,
+    cliente_id: int,
+    db: Session = Depends(get_db)
+):
+    # Obtener todos los pedidos del cliente
+    pedidos = crud.get_pedidos_by_cliente_id(db, cliente_id)
+    
+    if not pedidos:
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "message": "No se encontraron pedidos para este cliente."
+        })
+
+    # Inicializar estructuras para agrupar datos
+    combos_consumidos = {}
+    bebidas_consumidas = {}
+    total_combos = 0
+    total_bebidas = 0
+    total_cuenta = 0
+
+    # Procesar cada pedido
+    for pedido in pedidos:
+        # Procesar combos
+        if pedido.combo_id:
+            combo = crud.get_combo_by_id(db, pedido.combo_id)
+            if combo:
+                if combo.nombre not in combos_consumidos:
+                    combos_consumidos[combo.nombre] = {
+                        "cantidad": 0,
+                        "precio_unitario": combo.precio,
+                        "subtotal": 0
+                    }
+                combos_consumidos[combo.nombre]["cantidad"] += pedido.cant_combo
+                combos_consumidos[combo.nombre]["subtotal"] += pedido.cant_combo * combo.precio
+                total_combos += pedido.cant_combo
+
+        # Procesar bebidas
+        if pedido.bebida_id:
+            bebida = crud.get_bebida_by_id(db, pedido.bebida_id)
+            if bebida:
+                if bebida.nombre not in bebidas_consumidas:
+                    bebidas_consumidas[bebida.nombre] = {
+                        "cantidad": 0,
+                        "precio_unitario": bebida.precio,
+                        "subtotal": 0
+                    }
+                bebidas_consumidas[bebida.nombre]["cantidad"] += pedido.cant_bebida
+                bebidas_consumidas[bebida.nombre]["subtotal"] += pedido.cant_bebida * bebida.precio
+                total_bebidas += pedido.cant_bebida
+
+        # Acumular el total de la cuenta
+        total_cuenta += pedido.total_pedido
+
+    # Convertir combos y bebidas a listas para el template
+    combos_list = [
+        {"nombre": nombre, "cantidad": data["cantidad"], "precio_unitario": data["precio_unitario"], "subtotal": data["subtotal"]}
+        for nombre, data in combos_consumidos.items()
+    ]
+    bebidas_list = [
+        {"nombre": nombre, "cantidad": data["cantidad"], "precio_unitario": data["precio_unitario"], "subtotal": data["subtotal"]}
+        for nombre, data in bebidas_consumidas.items()
+    ]
+
+    # Obtener detalles del cliente
+    cliente = crud.get_cliente_by_id(db, cliente_id)
+    if not cliente:
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "message": "Cliente no encontrado."
+        })
+
+    # Crear el contexto para el recibo
+    recibo_context = {
+        "cliente_id": cliente_id,
+        "cliente_nombre": cliente.nombre,
+        "mesa_id": pedidos[0].mesa_id if pedidos else "N/A",
+        "fecha_hora": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "combos_consumidos": combos_list,
+        "bebidas_consumidas": bebidas_list,
+        "total_combos": total_combos,
+        "total_bebidas": total_bebidas,
+        "total_cuenta": total_cuenta
+    }
+
+    # Renderizar el template del recibo
+    return templates.TemplateResponse("recibo_cliente.html", {
+        "request": request,
+        **recibo_context
+    })
+
+#//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 @router.post("/cerrar_mesa/{mesa_id}", tags=["Pedidos"])
 async def cerrar_mesa(mesa_id: int, db: Session = Depends(get_db)):
     crud.cerrar_pedidos_de_mesa(db, mesa_id)
     return RedirectResponse(url="/", status_code=303)
 #//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 @router.get("/mesa/{mesa_id}/pedidos", response_class=HTMLResponse, tags=["Pedidos"])
-async def get_pedidos_por_mesa(mesa_id: int, request: Request, db: Session = Depends(get_db)):
+async def get_pedidos_por_mesa(
+    mesa_id: int, 
+    request: Request, 
+    db: Session = Depends(get_db)
+):
+    # Obtener los pedidos de la mesa
     pedidos = crud.get_pedidos_por_mesa(db, mesa_id)
+
+    # Calcular totales
     total_combos, total_bebidas, total_cuenta = crud.calcular_totales_pedidos(pedidos)
 
+    # Obtener el objeto Mesa
+    mesa = crud.get_mesa_by_id(db, mesa_id)  # Recuperar la mesa por su ID
+    if not mesa:
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "message": "Mesa no encontrada."
+        })
+
+    # Renderizar el template con el número de la mesa
     return templates.TemplateResponse("read_pedidos_mesa.html", {
         "request": request,
         "pedidos": pedidos,
         "mesa_id": mesa_id,
+        "mesa_numero_mesa": mesa.numero_mesa,  # Usar el número de la mesa
         "total_combos": total_combos,
         "total_bebidas": total_bebidas,
         "total_cuenta": total_cuenta

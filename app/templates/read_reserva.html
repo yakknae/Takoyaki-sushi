@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lista de Reservas</title>
+    <!--S T Y L E-->
     <link rel="stylesheet" href="/static/planilla.css" />
   </head>
   <body>
@@ -44,55 +45,12 @@
           <td>{{ reserva.cliente.nombre }} {{ reserva.cliente.apellido }}</td>
           <td>{{ reserva.mesa.numero_mesa }}</td>
           <td>
-            <button onclick="showUpdateForm('{{ reserva.id }}')">Actualizar</button>
             <button onclick="showDeleteForm('{{ reserva.id }}')">Eliminar</button>
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-
-    <!-- Formulario de actualización -->
-    <div id="updateForm" style="display: none">
-      <h2>Actualizar Reserva</h2>
-      <form
-        id="formActualizar"
-        action="/reservas/<reserva_id>/actualizar"
-        method="post"
-        onsubmit="enviarActualizarReserva(event)"
-      >
-        <input type="hidden" id="updateId" name="id" />
-        <div class="acomodar-input">
-          <label for="updateFecha">Fecha:</label>
-          <input type="date" id="updateFecha" name="fecha_reserva" required />
-        </div>
-        <div class="acomodar-input">
-          <label for="updateHora">Hora:</label>
-          <input type="time" id="updateHora" name="hora_reserva" required />
-        </div>
-        <div class="acomodar-input">
-          <label for="updateCliente">Cliente:</label>
-          <select id="updateCliente" name="cliente_id" required>
-            <!-- Cambiado a id_cliente -->
-            {% for cliente in clientes %}
-            <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="acomodar-input">
-          <label for="updateMesa">Mesa:</label>
-          <select id="updateMesa" name="mesa_id" required>
-            {% for mesa in mesas %}
-            <option value="{{ mesa.id }}">Mesa {{ mesa.numero_mesa }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="botones-act-dele">
-          <button type="submit">Actualizar</button>
-          <button class="pis" type="button" onclick="hideUpdateForm()">Cancelar</button>
-        </div>
-      </form>
-    </div>
 
     <!-- Formulario de eliminación -->
     <div id="deleteForm" style="display: none">

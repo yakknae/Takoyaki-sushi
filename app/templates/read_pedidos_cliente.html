@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Pedidos del Cliente {{ cliente_id }}</title>
+    <!--S T Y L E-->
     <link rel="stylesheet" href="/static/planilla.css" />
   </head>
   <body>
@@ -12,7 +13,7 @@
           <li><a href="/">Inicio</a></li>
           <li><a href="/select_cliente">Consultar otro cliente</a></li>
         </ul>
-        <h1>Pedidos de la Mesa "{{ mesa_id }}"- Cliente: "{{ cliente_nombre }}"</h1>
+        <h1>Pedidos de la Mesa ID: {{ mesa_id }} - Cliente: {{ cliente_nombre }}</h1>
       </nav>
     </div>
 
@@ -46,7 +47,9 @@
       <p>Combos consumidos: {{ total_combos }}</p>
       <p>Bebidas consumidas: {{ total_bebidas }}</p>
       <p>Total a cobrar: ${{ total_cuenta }}</p>
-
+      <form action="/generar_recibo_cliente/{{cliente_id}}" method="get" target="_blank">
+        <button type="submit">Generar recibo</button>
+      </form>
       <form action="/cerrar_cliente/{{ cliente_id }}" method="post">
         <button type="submit">Cerrar Cuenta del Cliente</button>
       </form>

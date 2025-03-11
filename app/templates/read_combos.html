@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lista de combos</title>
+    <!--S T Y L E-->
     <link rel="stylesheet" href="/static/planilla.css" />
   </head>
   <body>
@@ -81,23 +82,6 @@
         <div class="acomodar-input">
           <label for="updatePrecio">Precio:</label>
           <input type="number" id="updatePrecio" name="precio" step="0.01" required />
-        </div>
-
-        <div class="acomodar-input">
-          <label for="updateIngredientes">Ingredientes:</label>
-          <div id="ingredientesCheckboxes">
-            {% for ingrediente in ingredientes %}
-            <div>
-              <input
-                type="checkbox"
-                id="ingrediente{{ ingrediente.id }}"
-                name="ingredientes"
-                value="{{ ingrediente.id }}"
-              />
-              <label for="ingrediente{{ ingrediente.id }}">{{ ingrediente.nombre }}</label>
-            </div>
-            {% endfor %}
-          </div>
         </div>
 
         <div class="botones-act-dele">

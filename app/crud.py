@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from .models import Cliente, Mesa, DetalleCuenta
-from .schemas import PedidoCreate, Pedido
+from .models import Cliente, Mesa, DetalleCuenta, Pedido
+from .schemas import PedidoCreate
 from app import models, schemas
 from datetime import datetime
 #==================================== C L I E N T E S ========================================
@@ -61,7 +61,9 @@ def create_mesa(db: Session, mesa_data: schemas.MesaCreate):
 
 def get_mesa(db: Session, mesa_id: int):
     return db.query(Mesa).filter(Mesa.id == mesa_id).first()
-
+#//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+def get_mesa_by_id(db: Session, mesa_id: int):
+    return db.query(Mesa).filter(Mesa.id == mesa_id).first()
 #//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
 
 def get_all_mesas(db: Session):
@@ -161,6 +163,13 @@ def get_pedidos_por_mesa(db: Session, mesa_id: int):
     """Obtiene todos los pedidos activos de una mesa."""
     return db.query(models.Pedido).filter(models.Pedido.mesa_id == mesa_id).all()
 #//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+def get_pedidos_by_cliente_id(db: Session, cliente_id: int):
+    return db.query(Pedido).filter(Pedido.cliente_id == cliente_id).all()
+#//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+#//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+#//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+#//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//--//
+
 def cerrar_pedidos_de_mesa(db: Session, mesa_id: int):
     """Cierra todos los pedidos de una mesa."""
     pedidos = db.query(models.Pedido).filter(models.Pedido.mesa_id == mesa_id).all()
@@ -411,8 +420,8 @@ def agregar_producto_a_cuenta(db: Session, cuenta_id: int, producto_id: int, can
         subtotal=subtotal,
     )
     print("Cuenta ID:", cuenta_id)
-    print("Productos recibidos:", producto_id)  # Añadir línea de depuración
-    print("Cantidad recibida:", cantidad)  # Añadir línea de depuración
+    print("Productos recibidos:", producto_id) 
+    print("Cantidad recibida:", cantidad)
     db.add(detalle)
     db.commit()
     db.refresh(detalle)
@@ -491,6 +500,8 @@ def get_pedido_by_id(db: Session, pedido_id: int):
 def get_bebida_by_id(db: Session, bebida_id: int):
     return db.query(models.Bebida).filter(models.Bebida.id == bebida_id).first()
 
+def get_cliente_by_id(db: Session, cliente_id: int):
+    return db.query(models.Cliente).filter(models.Cliente.id == cliente_id).first()
 
 def get_combo_precio(db: Session, combo_id: int) -> float:
     combo = get_combo_by_id(db, combo_id)
