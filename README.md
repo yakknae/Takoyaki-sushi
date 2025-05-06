@@ -1,6 +1,8 @@
 # Takoyaki Sushi - Sistema de Gestión de Restaurante
+### Takoyaki Sushi es un sistema de gestión diseñado para administrar eficientemente las operaciones de un restaurante. Este proyecto permite gestionar mesas, pedidos, clientes, productos y más.
 
-- Takoyaki Sushi es un sistema de gestión diseñado para administrar eficientemente las operaciones de un restaurante. Este proyecto permite gestionar mesas, pedidos, clientes, productos y más.
+![image](https://github.com/user-attachments/assets/3eda0c82-e69d-4d23-aac9-2b263b07f331)
+
 
 ## Características principales
 
@@ -11,11 +13,11 @@
 
 ## Requisitos
 
-\*Antes de ejecutar el proyecto, asegúrate de tener instalado lo siguiente:
+### Antes de ejecutar el proyecto, asegúrate de tener instalado lo siguiente:
 
-    ** Python 3.8 o superior.
-    **MySQL Server configurado y en funcionamiento.
-    **Un editor de texto o IDE (por ejemplo, VS Code).
+- Python 3.8 o superior.
+- MySQL Server configurado y en funcionamiento.
+- Un editor de texto o IDE (por ejemplo, VS Code).
 
 ## Instalación
 
@@ -32,7 +34,7 @@
 
 > python -m app.database1
 
-Esto creará las tablas necesarias y cargará los datos iniciales.
+- Esto creará las tablas necesarias y cargará los datos iniciales.
 
 ## Iniciar el servidor
 
@@ -40,8 +42,8 @@ Esto creará las tablas necesarias y cargará los datos iniciales.
 
 - El servidor estará disponible en http://127.0.0.1:8000.
 
-- Detener el servidor
-- Para detener el servidor, presiona CTRL+C en la terminal donde se está ejecutando.
+## Detener el servidor
+- Para detener el servidor, presiona `CTRL+C` en la terminal donde se está ejecutando.
 
 ## Notas importantes
 
